@@ -142,11 +142,13 @@
                     <li><a href='/'>Home</a></li>
                     <li><a href='/service'>Services</a></li>
                     <li><a href='/contact'>About & Contact</a></li>
-                    <% if (locals.currentUser) { %>
-                        <li><a href='/users'>My Profile</a></li>
+                    <% if (locals.currentAdmin) { %>
+                        <li><a href='/management'>Management</a></li>
+                        <li><a href='/admin'>Admin Profile</a></li>
                         <li><a href='/logout'>Log Out</a></li>
-                    <% } else if (locals.currentAdmin) { %>
-                        <li><a href='/admin'>Admin Portal</a></li>
+                    <% } else if (locals.currentUser) { %>
+                        <li><a href='/purchaseticket'>Buy Ticket</a></li>
+                        <li><a href='/users'>My Profile</a></li>
                         <li><a href='/logout'>Log Out</a></li>
                     <% } else { %>
                         <li><a href='/login_reg'>Sign In / Register</a></li>

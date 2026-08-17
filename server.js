@@ -105,6 +105,9 @@ app.get('/login_reg', (req, res) => {
     if (req.session.user) {
         return res.redirect('/users');
     }
+    if (req.session.admin) {
+        return res.redirect('/admin');
+    }
     res.render('login_reg', { error: null });
 });
 
@@ -124,7 +127,9 @@ app.post('/users', async (req, res) => {
 
         if (result.rows.length > 0) {
             req.session.user = result.rows[0];
-            res.render('users', { user: result.rows[0] });
+            req.session.save(() => {
+                res.redirect('/users');
+            });
         } else {
             res.render('login_reg', { error: 'Invalid Login ID or Password.' });
         }
@@ -156,6 +161,9 @@ app.get('/admin_login', (req, res) => {
     if (req.session.admin) {
         return res.redirect('/admin');
     }
+    if (req.session.user) {
+        return res.redirect('/users');
+    }
     res.render('admin_login', { error: null });
 });
 
@@ -181,7 +189,9 @@ app.post('/admin', async (req, res) => {
 
         if (result.rows.length > 0) {
             req.session.admin = result.rows[0];
-            res.render('admin', { admin: result.rows[0] });
+            req.session.save(() => {
+                res.redirect('/admin');
+            });
         } else {
             res.render('admin_login', { error: 'Invalid Admin ID, Password, or Security Code.' });
         }
@@ -196,8 +206,8 @@ app.get('/admin', async (req, res) => {
         return res.redirect('/admin_login');
     }
     try {
-        const adminId = req.session.admin.ID || req.session.admin.id;
-        const result = await db.query('SELECT * FROM Admins WHERE ID = :id', { id: adminId });
+        const adminId = req.session.admin.ID || req.session.admin.id || req.session.admin[0];
+        const result = await db.query('SELECT * FROM Admins WHERE ID = :id', { id: parseInt(adminId, 10) });
         if (result.rows.length > 0) {
             req.session.admin = result.rows[0];
             res.render('admin', { admin: result.rows[0] });
