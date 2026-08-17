@@ -26,10 +26,15 @@
                     <div id='btn'></div>
                     <button type='button' class='toggle-btn'>Admin Sign In</button>
                 </div>
+                <% if (typeof error !== 'undefined' && error) { %>
+                    <div style="background: rgba(220, 53, 69, 0.85); color: white; padding: 10px; border-radius: 6px; margin-bottom: 12px; text-align: center; font-size: 14px;">
+                        <%= error %>
+                    </div>
+                <% } %>
                 <form id='login' class='input-group-login' action="/admin" method="POST">
-                    <input type='number' class='input-field' placeholder='Admin ID' name='ID' required>
+                    <input type='number' class='input-field' placeholder='Admin ID (e.g. 1001)' name='ID' required>
                     <input type='password' class='input-field' placeholder='Enter Password' name='password' required>
-                    <input type='text' class='input-field' placeholder='Security Code' name='securitycode' required>
+                    <input type='text' class='input-field' placeholder='Security Code (e.g. SEC1001)' name='securitycode' required>
                     <button type='submit' class='submit-btn'>Log in</button>
                 </form>
             </div>

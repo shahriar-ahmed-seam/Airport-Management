@@ -78,7 +78,7 @@ app.get('/contacts', (req, res) => {
 
 // Log in page
 app.get('/login_reg', (req, res) => {
-    res.render('login_reg');
+    res.render('login_reg', { error: null });
 });
 
 // User login
@@ -91,22 +91,25 @@ app.post('/users', async (req, res) => {
             JOIN LoginPsngr l ON p.ID = l.ID
             WHERE l.ID = :loginID AND l.Password = :Password
         `;
-        const result = await db.query(query, { loginID: parseInt(loginID, 10) || 0, Password });
+        const result = await db.query(query, {
+            loginID: parseInt(loginID, 10) || 0,
+            Password: (Password || '').trim()
+        });
 
         if (result.rows.length > 0) {
             res.render('users', { user: result.rows[0] });
         } else {
-            res.render('login_reg');
+            res.render('login_reg', { error: 'Invalid Login ID or Password.' });
         }
     } catch (error) {
         console.error('Error in user login:', error);
-        res.render('login_reg');
+        res.render('login_reg', { error: 'Login authentication error.' });
     }
 });
 
 // Admin login page
 app.get('/admin_login', (req, res) => {
-    res.render('admin_login');
+    res.render('admin_login', { error: null });
 });
 
 // Admin login verification
@@ -115,26 +118,29 @@ app.post('/admin', async (req, res) => {
 
     try {
         const adminId = parseInt(ID, 10) || 0;
+        const cleanPassword = (password || '').trim();
+        const cleanSecurityCode = (securitycode || '').trim();
+
         const loginQuery = `
             SELECT a.ID, a.First_Name, a.Last_Name, a.Salary, a.Email, a.Address
             FROM Admins a
             JOIN LoginAsAdmin l ON a.ID = l.ID
-            WHERE l.ID = :ID AND l.Password = :password AND l.SecurityCode = :securitycode
+            WHERE l.ID = :ID AND l.Password = :password AND UPPER(TRIM(l.SecurityCode)) = UPPER(:securitycode)
         `;
         const result = await db.query(loginQuery, {
             ID: adminId,
-            password,
-            securitycode
+            password: cleanPassword,
+            securitycode: cleanSecurityCode
         });
 
         if (result.rows.length > 0) {
             res.render('admin', { admin: result.rows[0] });
         } else {
-            res.render('admin_login');
+            res.render('admin_login', { error: 'Invalid Admin ID, Password, or Security Code.' });
         }
     } catch (error) {
         console.error('Error in admin login:', error);
-        res.render('admin_login');
+        res.render('admin_login', { error: 'Database authentication error.' });
     }
 });
 
