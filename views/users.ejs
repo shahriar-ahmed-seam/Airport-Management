@@ -175,6 +175,57 @@
             background-color: #e5b37b;
             transform: translateY(-2px);
         }
+
+        .tickets-section {
+            margin-top: 30px;
+            text-align: left;
+        }
+
+        .tickets-title {
+            color: #F3C693;
+            font-size: 20px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 5px;
+        }
+
+        .tickets-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .tickets-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .tickets-list::-webkit-scrollbar-thumb {
+            background: rgba(243, 198, 147, 0.5);
+            border-radius: 3px;
+        }
+
+        .ticket-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 15px;
+            color: #f1f1f1;
+        }
+
+        .ticket-row {
+            margin-bottom: 4px;
+        }
+        
+        .ticket-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .ticket-row strong {
+            color: #bbb;
+        }
     </style>
 </head>
 <body>
@@ -221,6 +272,32 @@
                         <span><%= user ? (user.ADDRESS || user.address || 'N/A') : 'N/A' %></span>
                     </div>
                 </div>
+
+                <% if (typeof bookedTickets !== 'undefined' && bookedTickets.length > 0) { %>
+                    <div class="tickets-section">
+                        <h3 class="tickets-title">My Tickets</h3>
+                        <div class="tickets-list">
+                            <% bookedTickets.forEach(function(ticket) { 
+                                const fDate = ticket.FLIGHT_DATE || ticket.flight_date || ticket.Flight_Date;
+                                const fNo = ticket.FLIGHT_NO || ticket.flight_no || ticket.Flight_No;
+                                const fSource = ticket.SOURCE || ticket.source || ticket.Source;
+                                const fDest = ticket.DESTINATION || ticket.destination || ticket.Destination;
+                                const seat = ticket.SEAT_NO || ticket.seat_no || ticket.Seat_No;
+                                
+                                let dateStr = fDate;
+                                if (fDate instanceof Date) {
+                                    dateStr = fDate.toISOString().split('T')[0];
+                                }
+                            %>
+                            <div class="ticket-item">
+                                <div class="ticket-row"><strong>Date:</strong> <%= dateStr %></div>
+                                <div class="ticket-row"><strong>Flight:</strong> <%= fNo %> (<%= fSource %> to <%= fDest %>)</div>
+                                <div class="ticket-row"><strong>Seat:</strong> <%= seat %></div>
+                            </div>
+                            <% }); %>
+                        </div>
+                    </div>
+                <% } %>
 
                 <div class="button-container">
                     <a href="/purchaseticket">

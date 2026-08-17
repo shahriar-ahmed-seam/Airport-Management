@@ -140,20 +140,37 @@ app.post('/users', async (req, res) => {
 });
 
 app.get('/users', async (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     if (!req.session.user) {
         return res.redirect('/login_reg');
     }
     try {
         const userId = req.session.user.ID || req.session.user.id || req.session.user[0];
         const result = await db.query('SELECT * FROM Passenger WHERE ID = :id', { id: parseInt(userId, 10) });
+        
+        let bookedTickets = [];
+        try {
+            const ticketQuery = `
+                SELECT b.Flight_Date, t.Flight_No, t.Source, t.Destination, b.Seat_No
+                FROM BookedSeats b
+                JOIN Ticket t ON b.Flight_No = t.Flight_No
+                WHERE b.Passenger_ID = :id
+                ORDER BY b.Flight_Date DESC
+            `;
+            const ticketResult = await db.query(ticketQuery, { id: parseInt(userId, 10) });
+            bookedTickets = ticketResult.rows;
+        } catch (err) {
+            console.error('Error fetching booked tickets:', err);
+        }
+
         if (result.rows.length > 0) {
             req.session.user = result.rows[0];
-            res.render('users', { user: result.rows[0] });
+            res.render('users', { user: result.rows[0], bookedTickets });
         } else {
-            res.render('users', { user: req.session.user });
+            res.render('users', { user: req.session.user, bookedTickets });
         }
     } catch (error) {
-        res.render('users', { user: req.session.user });
+        res.render('users', { user: req.session.user, bookedTickets: [] });
     }
 });
 
@@ -418,7 +435,7 @@ app.get('/getplanes', async (req, res) => {
     }
 });
 
-app.post('/varification', async (req, res) => {
+app.post('/verification', async (req, res) => {
     const { first_name, last_name, email, password } = req.body;
     const age = 20;
     const address = 'Dhaka, Bangladesh';
@@ -431,37 +448,48 @@ app.post('/varification', async (req, res) => {
         const maxId = result.rows[0] ? (result.rows[0].MAX_ID || result.rows[0].max_id || result.rows[0][0] || 800) : 800;
         const newId = parseInt(maxId, 10) + 1;
 
-        await db.query(`
-            INSERT INTO Passenger (ID, First_Name, Last_Name, Age, Email, Address)
-            VALUES (:newId, :first_name, :last_name, :age, :email, :address)
-        `, {
+        req.session.pendingRegistration = {
             newId,
             first_name,
             last_name,
             age,
             email,
-            address
-        });
-
-        await db.query(`
-            INSERT INTO LoginPsngr (ID, Password)
-            VALUES (:newId, :password)
-        `, {
-            newId,
+            address,
             password
-        });
+        };
 
-        res.render('varification', { newId, email });
+        res.render('verification', { newId, email });
     } catch (error) {
-        console.error('Error registering passenger:', error);
-        res.render('varification', { newId: null, email });
+        console.error('Error in verification step:', error);
+        res.render('verification', { newId: null, email });
     }
 });
 
-app.post('/verify-code', (req, res) => {
+app.post('/verify-code', async (req, res) => {
     const userEnteredCode = (req.body.code || '').trim();
     if (userEnteredCode === currentVerificationCode || userEnteredCode === '123456') {
-        res.json({ valid: true });
+        if (req.session.pendingRegistration) {
+            const { newId, first_name, last_name, age, email, address, password } = req.session.pendingRegistration;
+            try {
+                await db.query(`
+                    INSERT INTO Passenger (ID, First_Name, Last_Name, Age, Email, Address)
+                    VALUES (:newId, :first_name, :last_name, :age, :email, :address)
+                `, { newId, first_name, last_name, age, email, address });
+
+                await db.query(`
+                    INSERT INTO LoginPsngr (ID, Password)
+                    VALUES (:newId, :password)
+                `, { newId, password });
+                
+                req.session.pendingRegistration = null;
+                res.json({ valid: true });
+            } catch (error) {
+                console.error('Error inserting pending registration:', error);
+                res.json({ valid: false, error: 'Database error' });
+            }
+        } else {
+            res.json({ valid: true });
+        }
     } else {
         res.json({ valid: false });
     }
@@ -503,6 +531,7 @@ app.post('/seatplan', async (req, res) => {
 });
 
 app.get('/seatplan', async (req, res) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     const booking = req.session.booking || {
         source: 'DHAKA',
         destination: 'LONDON',

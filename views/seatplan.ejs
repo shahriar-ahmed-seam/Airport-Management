@@ -263,6 +263,8 @@
         </div>
 
         <div id="popup">Purchase Confirmed! Downloading Ticket...</div>
+        <!-- Hidden data for JavaScript -->
+        <div id="bookingData" data-seats="<%= JSON.stringify(locals.bookedSeats || []) %>" style="display: none;"></div>
     </div>
 
     <script>
@@ -270,7 +272,8 @@
         const purchaseButton = document.getElementById("purchaseButton");
         const popup = document.getElementById("popup");
         const selectedSeats = new Set();
-        const alreadyBooked = new Set(<%- JSON.stringify(locals.bookedSeats || []) %>);
+        const seatData = JSON.parse(document.getElementById("bookingData").dataset.seats || "[]");
+        const alreadyBooked = new Set(seatData);
 
         const numRows = 10;
         const numCols = 6;
