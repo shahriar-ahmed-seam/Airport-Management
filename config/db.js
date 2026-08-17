@@ -32,21 +32,23 @@ const oracleConfig = {
 
 function normalizeRow(row) {
     if (!row) return row;
-    const normalized = Array.isArray(row) ? [...row] : [];
-    
-    // Copy key-value pairs
-    for (const [key, value] of Object.entries(row)) {
-        normalized[key] = value;
-        normalized[key.toUpperCase()] = value;
-        normalized[key.toLowerCase()] = value;
-    }
+    const normalized = {};
 
-    // If row was an object and not an array, also map numeric indices
-    if (!Array.isArray(row)) {
+    if (Array.isArray(row)) {
+        for (let i = 0; i < row.length; i++) {
+            normalized[i] = row[i];
+        }
+    } else {
         const values = Object.values(row);
         for (let i = 0; i < values.length; i++) {
             normalized[i] = values[i];
         }
+    }
+
+    for (const [key, value] of Object.entries(row)) {
+        normalized[key] = value;
+        normalized[key.toUpperCase()] = value;
+        normalized[key.toLowerCase()] = value;
     }
     return normalized;
 }
@@ -64,15 +66,11 @@ async function query(sqlText, params = {}) {
             });
         }
 
-        // Convert Oracle syntax (:name) to Postgres positional params ($1, $2)
         let pgSql = sqlText;
-        // Remove FROM DUAL if present
         pgSql = pgSql.replace(/\s+FROM\s+DUAL\b/gi, '');
-        // Replace TO_DATE(:var, 'YYYY-MM-DD') with :var::date if needed or let TO_DATE function run
         
         const paramValues = [];
         const paramRegex = /:([a-zA-Z0-9_]+)/g;
-        let match;
         let index = 1;
         const keyToIndex = {};
 
@@ -117,6 +115,5 @@ async function query(sqlText, params = {}) {
 
 module.exports = {
     query,
-    clientType,
-    pgPool
+    clientType
 };
