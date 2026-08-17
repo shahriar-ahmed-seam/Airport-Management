@@ -129,6 +129,19 @@
             background-color: #0056b3;
             transform: translateY(-2px);
         }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 15px;
+            color: #F3C693;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -141,8 +154,13 @@
                 <ul id='MenuItems'>
                     <li><a href='/'>Home</a></li>
                     <li><a href='/service'>Services</a></li>
-                    <li><a href='/contact'>About Us</a></li>
-                    <li><a href='/contact'>Contact</a></li>
+                    <li><a href='/contact'>About & Contact</a></li>
+                    <% if (locals.currentAdmin) { %>
+                        <li><a href='/admin'>Admin Portal</a></li>
+                        <li><a href='/logout'>Log Out</a></li>
+                    <% } else { %>
+                        <li><a href='/admin_login'>Admin Login</a></li>
+                    <% } %>
                 </ul>
             </nav>
         </div>
@@ -153,32 +171,33 @@
                 <form action="/updateinfo" method="POST">
                     <div class="form-row">
                         <label for="first_name">First Name</label>
-                        <input type="text" id="first_name" name="first_name" placeholder="First Name" required>
+                        <input type="text" id="first_name" name="first_name" placeholder="First Name" value="<%= employee ? (employee.FIRST_NAME || employee.first_name || '') : '' %>" required>
                     </div>
 
                     <div class="form-row">
                         <label for="last_name">Last Name</label>
-                        <input type="text" id="last_name" name="last_name" placeholder="Last Name" required>
+                        <input type="text" id="last_name" name="last_name" placeholder="Last Name" value="<%= employee ? (employee.LAST_NAME || employee.last_name || '') : '' %>" required>
                     </div>
 
                     <div class="form-row">
                         <label for="salary">Salary ($)</label>
-                        <input type="number" id="salary" name="salary" placeholder="Salary" required>
+                        <input type="number" id="salary" name="salary" placeholder="Salary" value="<%= employee ? (employee.SALARY || employee.salary || '') : '' %>" required>
                     </div>
 
                     <div class="form-row">
                         <label for="email">Email Address</label>
-                        <input type="email" id="email" name="email" placeholder="example@email.com" required>
+                        <input type="email" id="email" name="email" placeholder="example@email.com" value="<%= employee ? (employee.EMAIL || employee.email || '') : '' %>" required>
                     </div>
 
                     <div class="form-row">
                         <label for="address">Address</label>
-                        <input type="text" id="address" name="address" placeholder="Address" required>
+                        <input type="text" id="address" name="address" placeholder="Address" value="<%= employee ? (employee.ADDRESS || employee.address || '') : '' %>" required>
                     </div>
 
-                    <input type="hidden" name="id" value="<%= id %>">
+                    <input type="hidden" name="id" value="<%= employee ? (employee.ID || employee.id || '') : '' %>">
 
                     <button type="submit" class="btn-save">Save Employee</button>
+                    <a href="/employee" class="back-link">Cancel & Return to Employee List</a>
                 </form>
             </div>
         </div>
