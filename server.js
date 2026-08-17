@@ -4,6 +4,7 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
+const session = require('express-session');
 const db = require('./config/db');
 
 dotenv.config();
@@ -19,6 +20,19 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+app.use(session({
+    secret: 'airport-management-secret-key-2026',
+    resave: false,
+    saveUninitialized: false,
+    cookie: { maxAge: 24 * 60 * 60 * 1000 }
+}));
+
+app.use((req, res, next) => {
+    res.locals.currentUser = req.session.user || null;
+    res.locals.currentAdmin = req.session.admin || null;
+    next();
+});
 
 let currentVerificationCode = '123456';
 
@@ -44,16 +58,27 @@ function sendVerificationEmail(emailAddress, code) {
 
     transporter.sendMail(mailOptions, (error, info) => {
         if (error) {
-            console.error('Error sending email (verification code is still active):', error.message);
+            console.error('Error sending email:', error.message);
         } else {
             console.log('Email sent:', info.response);
         }
     });
 }
 
-// Home page
+function parseTimeToDecimal(timeStr) {
+    if (!timeStr) return 0;
+    const s = String(timeStr).trim();
+    if (s.includes(':')) {
+        const parts = s.split(':');
+        const hours = parseFloat(parts[0]) || 0;
+        const minutes = parseFloat(parts[1]) || 0;
+        return hours + (minutes / 60);
+    }
+    return parseFloat(s) || 0;
+}
+
 app.get('/', (req, res) => {
-    res.render('index', { text: 'world' });
+    res.render('index');
 });
 
 app.get('/contact', (req, res) => {
@@ -61,7 +86,11 @@ app.get('/contact', (req, res) => {
 });
 
 app.get('/about', (req, res) => {
-    res.render('contact');
+    res.redirect('/contact');
+});
+
+app.get('/contacts', (req, res) => {
+    res.redirect('/contact');
 });
 
 app.get('/service', (req, res) => {
@@ -72,16 +101,13 @@ app.get('/services', (req, res) => {
     res.render('service');
 });
 
-app.get('/contacts', (req, res) => {
-    res.render('contact');
-});
-
-// Log in page
 app.get('/login_reg', (req, res) => {
+    if (req.session.user) {
+        return res.redirect('/users');
+    }
     res.render('login_reg', { error: null });
 });
 
-// User login
 app.post('/users', async (req, res) => {
     const { loginID, Password } = req.body;
     try {
@@ -97,6 +123,7 @@ app.post('/users', async (req, res) => {
         });
 
         if (result.rows.length > 0) {
+            req.session.user = result.rows[0];
             res.render('users', { user: result.rows[0] });
         } else {
             res.render('login_reg', { error: 'Invalid Login ID or Password.' });
@@ -107,12 +134,31 @@ app.post('/users', async (req, res) => {
     }
 });
 
-// Admin login page
+app.get('/users', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login_reg');
+    }
+    try {
+        const userId = req.session.user.ID || req.session.user.id;
+        const result = await db.query('SELECT * FROM Passenger WHERE ID = :id', { id: userId });
+        if (result.rows.length > 0) {
+            req.session.user = result.rows[0];
+            res.render('users', { user: result.rows[0] });
+        } else {
+            res.render('users', { user: req.session.user });
+        }
+    } catch (error) {
+        res.render('users', { user: req.session.user });
+    }
+});
+
 app.get('/admin_login', (req, res) => {
+    if (req.session.admin) {
+        return res.redirect('/admin');
+    }
     res.render('admin_login', { error: null });
 });
 
-// Admin login verification
 app.post('/admin', async (req, res) => {
     const { ID, password, securitycode } = req.body;
 
@@ -134,6 +180,7 @@ app.post('/admin', async (req, res) => {
         });
 
         if (result.rows.length > 0) {
+            req.session.admin = result.rows[0];
             res.render('admin', { admin: result.rows[0] });
         } else {
             res.render('admin_login', { error: 'Invalid Admin ID, Password, or Security Code.' });
@@ -144,18 +191,44 @@ app.post('/admin', async (req, res) => {
     }
 });
 
+app.get('/admin', async (req, res) => {
+    if (!req.session.admin) {
+        return res.redirect('/admin_login');
+    }
+    try {
+        const adminId = req.session.admin.ID || req.session.admin.id;
+        const result = await db.query('SELECT * FROM Admins WHERE ID = :id', { id: adminId });
+        if (result.rows.length > 0) {
+            req.session.admin = result.rows[0];
+            res.render('admin', { admin: result.rows[0] });
+        } else {
+            res.render('admin', { admin: req.session.admin });
+        }
+    } catch (error) {
+        res.render('admin', { admin: req.session.admin });
+    }
+});
+
 app.get('/management', (req, res) => {
+    if (!req.session.admin) {
+        return res.redirect('/admin_login');
+    }
     res.render('management');
 });
 
-// Admin - Financials
+app.get('/logout', (req, res) => {
+    req.session.destroy(() => {
+        res.redirect('/');
+    });
+});
+
 app.get('/money', async (req, res) => {
     try {
         const debitResult = await db.query(`SELECT TOTAL_DEBIT(0) AS DEBIT FROM DUAL`);
         const creditResult = await db.query(`SELECT TOTAL_CREDIT(0) AS CREDIT FROM DUAL`);
 
-        const debit = debitResult.rows[0] ? (debitResult.rows[0].DEBIT || debitResult.rows[0][0] || 0) : 0;
-        const credit = creditResult.rows[0] ? (creditResult.rows[0].CREDIT || creditResult.rows[0][0] || 0) : 0;
+        const debit = debitResult.rows[0] ? (debitResult.rows[0].DEBIT || debitResult.rows[0].debit || debitResult.rows[0][0] || 0) : 0;
+        const credit = creditResult.rows[0] ? (creditResult.rows[0].CREDIT || creditResult.rows[0].credit || creditResult.rows[0][0] || 0) : 0;
         const profit = Number(credit) - Number(debit);
 
         res.render('money', { debit, credit, profit });
@@ -165,7 +238,6 @@ app.get('/money', async (req, res) => {
     }
 });
 
-// Admin - Employees List
 app.get('/employee', async (req, res) => {
     try {
         const query = 'SELECT ID, First_Name, Last_Name, Salary, Email, Address FROM Employees ORDER BY ID';
@@ -177,7 +249,6 @@ app.get('/employee', async (req, res) => {
     }
 });
 
-// Admin - Delete Employee
 app.post('/delete', async (req, res) => {
     const { id } = req.body;
     try {
@@ -189,14 +260,33 @@ app.post('/delete', async (req, res) => {
     }
 });
 
-// Edit Passenger Profile
-app.post('/editprofile', (req, res) => {
-    const { id } = req.body;
-    res.render('editprofile', { id });
+app.post('/editprofile', async (req, res) => {
+    const targetId = req.body.id || (req.session.user ? (req.session.user.ID || req.session.user.id) : null);
+    if (!targetId) {
+        return res.redirect('/login_reg');
+    }
+    try {
+        const result = await db.query('SELECT * FROM Passenger WHERE ID = :id', { id: parseInt(targetId, 10) });
+        const user = result.rows[0] || req.session.user || null;
+        res.render('editprofile', { user });
+    } catch (error) {
+        console.error('Error loading passenger profile:', error);
+        res.render('editprofile', { user: req.session.user || null });
+    }
 });
 
-app.get('/editprofile', (req, res) => {
-    res.render('editprofile', { id: '' });
+app.get('/editprofile', async (req, res) => {
+    if (!req.session.user) {
+        return res.redirect('/login_reg');
+    }
+    const targetId = req.session.user.ID || req.session.user.id;
+    try {
+        const result = await db.query('SELECT * FROM Passenger WHERE ID = :id', { id: parseInt(targetId, 10) });
+        const user = result.rows[0] || req.session.user;
+        res.render('editprofile', { user });
+    } catch (error) {
+        res.render('editprofile', { user: req.session.user });
+    }
 });
 
 app.post('/updateuser', async (req, res) => {
@@ -219,17 +309,27 @@ app.post('/updateuser', async (req, res) => {
                 address
             }
         );
-        res.redirect('/login_reg');
+        const result = await db.query('SELECT * FROM Passenger WHERE ID = :id', { id: parseInt(id, 10) });
+        if (result.rows.length > 0) {
+            req.session.user = result.rows[0];
+        }
+        res.redirect('/users');
     } catch (error) {
         console.error('Error updating passenger profile:', error);
         res.status(500).send('Error updating passenger profile');
     }
 });
 
-// Edit Employee
-app.post('/editemployee', (req, res) => {
+app.post('/editemployee', async (req, res) => {
     const { id } = req.body;
-    res.render('editemployee', { id });
+    try {
+        const result = await db.query('SELECT * FROM Employees WHERE ID = :id', { id: parseInt(id, 10) });
+        const employee = result.rows[0] || null;
+        res.render('editemployee', { employee });
+    } catch (error) {
+        console.error('Error loading employee info:', error);
+        res.render('editemployee', { employee: null });
+    }
 });
 
 app.post('/updateinfo', async (req, res) => {
@@ -259,22 +359,23 @@ app.post('/updateinfo', async (req, res) => {
     }
 });
 
-// Flight Search
 app.get('/search', (req, res) => {
     res.render('search');
 });
 
 app.get('/getFlightInfo', async (req, res) => {
-    const { flightNumber, timeRange } = req.query;
+    const flightNumber = parseInt(req.query.flightNumber, 10) || 0;
+    const timeDecimal = parseTimeToDecimal(req.query.timeRange);
+
     try {
         const result = await db.query(
             `SELECT FIND_PLANE(:flightNumber, :timeRange) AS LOCATION FROM DUAL`,
             {
-                flightNumber: parseInt(flightNumber, 10) || 0,
-                timeRange: parseFloat(timeRange) || 0
+                flightNumber,
+                timeRange: timeDecimal
             }
         );
-        const location = result.rows[0] ? (result.rows[0].LOCATION || result.rows[0][0] || 'Not Found') : 'Not Found';
+        const location = result.rows[0] ? (result.rows[0].LOCATION || result.rows[0].location || result.rows[0][0] || 'Not Found') : 'Not Found';
         res.json(location);
     } catch (error) {
         console.error('Error retrieving flight location:', error);
@@ -282,7 +383,6 @@ app.get('/getFlightInfo', async (req, res) => {
     }
 });
 
-// Airports Info
 app.get('/airport', (req, res) => {
     res.render('airport');
 });
@@ -293,9 +393,14 @@ app.get('/getplanes', async (req, res) => {
         const query = `
             SELECT Total_Flight, Name, ID, City, TotalCapacity, Country 
             FROM AirPort 
-            WHERE UPPER(Name) = UPPER(:airportName) OR UPPER(City) = UPPER(:airportName)
+            WHERE UPPER(Name) = UPPER(:airportName) 
+               OR UPPER(City) = UPPER(:airportName)
+               OR UPPER(Name) LIKE UPPER(:airportLike)
         `;
-        const result = await db.query(query, { airportName });
+        const result = await db.query(query, {
+            airportName,
+            airportLike: `%${airportName}%`
+        });
         res.json(result.rows[0] || null);
     } catch (error) {
         console.error('Error retrieving airport data:', error);
@@ -303,7 +408,6 @@ app.get('/getplanes', async (req, res) => {
     }
 });
 
-// Passenger Registration & Verification
 app.post('/varification', async (req, res) => {
     const { first_name, last_name, email, password } = req.body;
     const age = 20;
@@ -314,7 +418,7 @@ app.post('/varification', async (req, res) => {
 
     try {
         const result = await db.query(`SELECT COALESCE(MAX(ID), 800) AS MAX_ID FROM Passenger`);
-        const maxId = result.rows[0] ? (result.rows[0].MAX_ID || result.rows[0][0] || 800) : 800;
+        const maxId = result.rows[0] ? (result.rows[0].MAX_ID || result.rows[0].max_id || result.rows[0][0] || 800) : 800;
         const newId = parseInt(maxId, 10) + 1;
 
         await db.query(`
@@ -337,7 +441,6 @@ app.post('/varification', async (req, res) => {
             password
         });
 
-        console.log(`New passenger created: ID ${newId}`);
         res.render('varification', { newId, email });
     } catch (error) {
         console.error('Error registering passenger:', error);
@@ -345,7 +448,6 @@ app.post('/varification', async (req, res) => {
     }
 });
 
-// Code verification endpoint
 app.post('/verify-code', (req, res) => {
     const userEnteredCode = (req.body.code || '').trim();
     if (userEnteredCode === currentVerificationCode || userEnteredCode === '123456') {
@@ -355,7 +457,6 @@ app.post('/verify-code', (req, res) => {
     }
 });
 
-// Ticket Purchase Flow
 app.get('/purchaseticket', (req, res) => {
     res.render('purchaseticket');
 });
@@ -368,15 +469,19 @@ app.post('/seatplan', async (req, res) => {
             FROM Ticket
             WHERE UPPER(Source) = UPPER(:source)
               AND UPPER(Destination) = UPPER(:destination)
-              AND Flight_Date = TO_DATE(:flightDate, 'YYYY-MM-DD')
         `;
         const result = await db.query(query, {
             source,
-            destination,
-            flightDate
+            destination
         });
 
         if (result.rows.length > 0) {
+            req.session.booking = {
+                source,
+                destination,
+                flightDate,
+                ticket: result.rows[0]
+            };
             res.status(200).json({ availableTickets: true, seatData: result.rows[0] });
         } else {
             res.status(200).json({ availableTickets: false });
@@ -388,14 +493,13 @@ app.post('/seatplan', async (req, res) => {
 });
 
 app.get('/seatplan', (req, res) => {
-    res.render('seatplan');
+    res.render('seatplan', { booking: req.session.booking || null });
 });
 
 app.get('/explore', (req, res) => {
     res.render('explore');
 });
 
-// Ticket Download
 app.get('/download-file', (req, res) => {
     const filePath = path.join(__dirname, 'public', 'Ticket.txt');
     res.download(filePath, 'Ticket.txt');
