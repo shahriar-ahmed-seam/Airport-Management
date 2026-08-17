@@ -1,7 +1,20 @@
-=============================================
-         DHAKA AIRPORT - BOARDING PASS       
-=============================================
-Thank you for booking your flight with us!
-Please carry a printed copy or digital copy of
-this pass along with your valid passport / NID.
-=============================================
+======================================================================
+                 HAZRAT SHAHJALAL INTERNATIONAL AIRPORT               
+                       ELECTRONIC BOARDING PASS                       
+======================================================================
+PASSENGER / FLIGHT DETAILS:
+----------------------------------------------------------------------
+Carrier / Airline  : Biman Bangladesh Airlines / Partner Airlines
+Flight Route       : DAC (Dhaka) -> International / Domestic
+Boarding Status    : CONFIRMED
+Class              : ECONOMY / BUSINESS
+Gate               : Gate 04 (Terminal 2)
+Boarding Time      : 45 Minutes before Scheduled Departure
+======================================================================
+IMPORTANT TRAVEL NOTICE:
+- Please arrive at the airport at least 3 hours prior to departure.
+- Ensure your passport is valid for at least 6 months from travel date.
+- Present this digital or printed pass at security and immigration checkpoints.
+======================================================================
+              WISH YOU A SAFE AND PLEASANT JOURNEY!
+======================================================================

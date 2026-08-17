@@ -291,22 +291,37 @@
             }
 
             const seatNames = Array.from(selectedSeats);
-            const seatData = "Selected Seats: " + seatNames.join(", ");
-            downloadTextFile("selected_seats.txt", seatData);
+            const now = new Date().toLocaleString();
+            const ticketContent = 
+`======================================================================
+                 HAZRAT SHAHJALAL INTERNATIONAL AIRPORT               
+                       ELECTRONIC BOARDING PASS                       
+======================================================================
+PASSENGER / BOOKING DETAILS:
+----------------------------------------------------------------------
+Carrier / Airline  : Biman Bangladesh Airlines
+Flight Route       : DAC (Dhaka) -> Selected Destination
+Selected Seat(s)   : ${seatNames.join(", ")}
+Total Seats        : ${seatNames.length}
+Booking Status     : CONFIRMED
+Class              : ECONOMY / BUSINESS
+Gate               : Gate 04 (Terminal 2)
+Issue Date & Time  : ${now}
+======================================================================
+IMPORTANT TRAVEL NOTICE:
+- Please arrive at the airport at least 3 hours prior to departure.
+- Ensure your passport is valid for at least 6 months from travel date.
+- Present this digital or printed pass at security checkpoints.
+======================================================================
+              WISH YOU A SAFE AND PLEASANT JOURNEY!
+======================================================================`;
+
+            downloadTextFile("Ticket.txt", ticketContent);
 
             popup.style.display = "block";
 
             setTimeout(function () {
                 popup.style.display = "none";
-
-                var fileUrl = '/Ticket.txt';
-                var a = document.createElement('a');
-                a.href = fileUrl;
-                a.download = 'Ticket.txt';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-
                 window.location.href = '/explore';
             }, 2000);
         });
