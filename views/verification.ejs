@@ -214,10 +214,10 @@
                 popup.style.display = 'block';
                 if (data.valid) {
                     popup.className = 'popup-success';
-                    popup.innerText = 'Code verified! Redirecting to login...';
+                    popup.innerText = 'Account verified successfully! Logging you in...';
                     setTimeout(function () {
-                        window.location.href = '/login_reg';
-                    }, 2000);
+                        window.location.href = data.autoLogin ? '/users' : '/login_reg';
+                    }, 1500);
                 } else {
                     popup.className = 'popup-error';
                     popup.innerText = 'Invalid code. Please try again.';

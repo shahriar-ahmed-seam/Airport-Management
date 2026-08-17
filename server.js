@@ -48,12 +48,13 @@ const transporter = nodemailer.createTransport(
     })
 );
 
-function sendVerificationEmail(emailAddress, code) {
+function sendVerificationEmail(emailAddress, code, newId) {
+    const idInfo = newId ? `\nYour Assigned Login ID is: ${newId}` : '';
     const mailOptions = {
         from: process.env.GMAIL_EMAIL || 'takyshahriar@gmail.com',
         to: emailAddress,
-        subject: 'Verification Code',
-        text: `Your Verification Code is ${code}`,
+        subject: 'Dhaka Airport - Verification Code & Login Credentials',
+        text: `Welcome to Dhaka Airport Management System!\n\nYour Verification Code is: ${code}${idInfo}\n\nYou can log into your account using either your Email address (${emailAddress}) or your Login ID (${newId || 'assigned ID'}).`,
     };
 
     transporter.sendMail(mailOptions, (error, info) => {
@@ -114,15 +115,21 @@ app.get('/login_reg', (req, res) => {
 app.post('/users', async (req, res) => {
     const { loginID, Password } = req.body;
     try {
+        const rawIdentifier = (loginID || '').trim();
+        const numericId = parseInt(rawIdentifier, 10) || 0;
+        const cleanPassword = (Password || '').trim();
+
         const query = `
             SELECT p.ID, p.First_Name, p.Last_Name, p.Age, p.Email, p.Address
             FROM Passenger p
             JOIN LoginPsngr l ON p.ID = l.ID
-            WHERE l.ID = :loginID AND l.Password = :Password
+            WHERE (p.ID = :numericId OR LOWER(p.Email) = LOWER(:loginIdentifier))
+              AND l.Password = :Password
         `;
         const result = await db.query(query, {
-            loginID: parseInt(loginID, 10) || 0,
-            Password: (Password || '').trim()
+            numericId: numericId,
+            loginIdentifier: rawIdentifier,
+            Password: cleanPassword
         });
 
         if (result.rows.length > 0) {
@@ -131,7 +138,7 @@ app.post('/users', async (req, res) => {
                 res.redirect('/users');
             });
         } else {
-            res.render('login_reg', { error: 'Invalid Login ID or Password.' });
+            res.render('login_reg', { error: 'Invalid Login ID / Email or Password.' });
         }
     } catch (error) {
         console.error('Error in user login:', error);
@@ -188,7 +195,8 @@ app.post('/admin', async (req, res) => {
     const { ID, password, securitycode } = req.body;
 
     try {
-        const adminId = parseInt(ID, 10) || 0;
+        const rawIdentifier = (ID || '').trim();
+        const numericId = parseInt(rawIdentifier, 10) || 0;
         const cleanPassword = (password || '').trim();
         const cleanSecurityCode = (securitycode || '').trim();
 
@@ -196,10 +204,13 @@ app.post('/admin', async (req, res) => {
             SELECT a.ID, a.First_Name, a.Last_Name, a.Salary, a.Email, a.Address
             FROM Admins a
             JOIN LoginAsAdmin l ON a.ID = l.ID
-            WHERE l.ID = :ID AND l.Password = :password AND UPPER(TRIM(l.SecurityCode)) = UPPER(:securitycode)
+            WHERE (a.ID = :numericId OR LOWER(a.Email) = LOWER(:loginIdentifier)) 
+              AND l.Password = :password 
+              AND UPPER(TRIM(l.SecurityCode)) = UPPER(:securitycode)
         `;
         const result = await db.query(loginQuery, {
-            ID: adminId,
+            numericId: numericId,
+            loginIdentifier: rawIdentifier,
             password: cleanPassword,
             securitycode: cleanSecurityCode
         });
@@ -441,12 +452,13 @@ app.post('/verification', async (req, res) => {
     const address = 'Dhaka, Bangladesh';
 
     currentVerificationCode = String(Math.floor(100000 + Math.random() * 900000));
-    sendVerificationEmail(email, currentVerificationCode);
 
     try {
         const result = await db.query(`SELECT COALESCE(MAX(ID), 800) AS MAX_ID FROM Passenger`);
         const maxId = result.rows[0] ? (result.rows[0].MAX_ID || result.rows[0].max_id || result.rows[0][0] || 800) : 800;
         const newId = parseInt(maxId, 10) + 1;
+
+        sendVerificationEmail(email, currentVerificationCode, newId);
 
         req.session.pendingRegistration = {
             newId,
@@ -481,14 +493,25 @@ app.post('/verify-code', async (req, res) => {
                     VALUES (:newId, :password)
                 `, { newId, password });
                 
+                req.session.user = {
+                    ID: newId,
+                    FIRST_NAME: first_name,
+                    LAST_NAME: last_name,
+                    AGE: age,
+                    EMAIL: email,
+                    ADDRESS: address
+                };
                 req.session.pendingRegistration = null;
-                res.json({ valid: true });
+
+                req.session.save(() => {
+                    res.json({ valid: true, autoLogin: true, newId });
+                });
             } catch (error) {
                 console.error('Error inserting pending registration:', error);
                 res.json({ valid: false, error: 'Database error' });
             }
         } else {
-            res.json({ valid: true });
+            res.json({ valid: true, autoLogin: false });
         }
     } else {
         res.json({ valid: false });
