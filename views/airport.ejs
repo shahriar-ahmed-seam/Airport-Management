@@ -203,8 +203,17 @@
                 <ul id='MenuItems'>
                     <li><a href='/'>Home</a></li>
                     <li><a href='/service'>Services</a></li>
-                    <li><a href='/contact'>About Us</a></li>
-                    <li><a href='/contact'>Contact</a></li>
+                    <li><a href='/contact'>About & Contact</a></li>
+                    <% if (locals.currentAdmin) { %>
+                        <li><a href='/management'>Management</a></li>
+                        <li><a href='/logout'>Log Out</a></li>
+                    <% } else if (locals.currentUser) { %>
+                        <li><a href='/users'>My Profile</a></li>
+                        <li><a href='/logout'>Log Out</a></li>
+                    <% } else { %>
+                        <li><a href='/login_reg'>Sign In / Register</a></li>
+                        <li><a href='/admin_login'>Admin</a></li>
+                    <% } %>
                 </ul>
             </nav>
         </div>
@@ -213,7 +222,7 @@
 
         <div class="search-wrapper">
             <div class="search-bar-row">
-                <input type="text" id="searchInput" placeholder="Enter Airport Name (e.g. JFK, LHR, DXB)">
+                <input type="text" id="searchInput" placeholder="Enter Airport Name (e.g. DHAKA, DUBAI, HEATHROW, JFK)">
                 <button id="searchButton" class="btn-search">Search</button>
                 <button id="refreshButton" class="btn-refresh">Refresh</button>
             </div>
@@ -236,31 +245,38 @@
                 .then(response => response.json())
                 .then(data => {
                     flightInfoContainer.innerHTML = '';
-                    if (data && data.length > 0) {
+                    if (data) {
+                        const name = data[1] || data.NAME || data.name || 'Airport Details';
+                        const flightNo = data[0] !== undefined ? data[0] : (data.TOTAL_FLIGHT || data.total_flight || 'N/A');
+                        const id = data[2] !== undefined ? data[2] : (data.ID || data.id || 'N/A');
+                        const city = data[3] !== undefined ? data[3] : (data.CITY || data.city || 'N/A');
+                        const cap = data[4] !== undefined ? data[4] : (data.TOTALCAPACITY || data.totalcapacity || 'N/A');
+                        const country = data[5] !== undefined ? data[5] : (data.COUNTRY || data.country || 'N/A');
+
                         const card = document.createElement('div');
                         card.className = 'flight-info-card';
                         card.innerHTML = `
-                            <h3>${data[1] || 'Airport Details'}</h3>
+                            <h3>${name}</h3>
                             <div class="info-grid">
                                 <div class="info-item">
-                                    <div class="info-label">Flight Number</div>
-                                    <div class="info-value">${data[0] || 'N/A'}</div>
+                                    <div class="info-label">Daily Flights</div>
+                                    <div class="info-value">${flightNo}</div>
                                 </div>
                                 <div class="info-item">
-                                    <div class="info-label">Flight ID</div>
-                                    <div class="info-value">${data[2] || 'N/A'}</div>
+                                    <div class="info-label">Airport ID</div>
+                                    <div class="info-value">${id}</div>
                                 </div>
                                 <div class="info-item">
                                     <div class="info-label">City</div>
-                                    <div class="info-value">${data[3] || 'N/A'}</div>
+                                    <div class="info-value">${city}</div>
                                 </div>
                                 <div class="info-item">
-                                    <div class="info-label">Capacity</div>
-                                    <div class="info-value">${data[4] || 'N/A'}</div>
+                                    <div class="info-label">Total Capacity</div>
+                                    <div class="info-value">${cap}</div>
                                 </div>
                                 <div class="info-item" style="grid-column: 1 / -1;">
                                     <div class="info-label">Country</div>
-                                    <div class="info-value">${data[5] || 'N/A'}</div>
+                                    <div class="info-value">${country}</div>
                                 </div>
                             </div>
                         `;

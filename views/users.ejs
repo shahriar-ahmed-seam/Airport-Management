@@ -187,8 +187,9 @@
                 <ul id='MenuItems'>
                     <li><a href='/'>Home</a></li>
                     <li><a href='/service'>Services</a></li>
-                    <li><a href='/contact'>About Us</a></li>
-                    <li><a href='/contact'>Contact</a></li>
+                    <li><a href='/contact'>About & Contact</a></li>
+                    <li><a href='/users'>My Profile</a></li>
+                    <li><a href='/logout'>Log Out</a></li>
                 </ul>
             </nav>
         </div>
@@ -199,25 +200,25 @@
             <div class="user-card">
                 <img src="/images/img.jpg" alt="User Profile" class="user-avatar">
                 <h2 class="user-name">
-                    <%= user.FIRST_NAME || '' %> <%= user.LAST_NAME || '' %>
+                    <%= user ? (user.FIRST_NAME || user.first_name || '') : '' %> <%= user ? (user.LAST_NAME || user.last_name || '') : '' %>
                 </h2>
 
                 <div class="user-info-list">
                     <div class="user-info-row">
                         <span class="user-info-label">Passenger ID:</span>
-                        <span><%= user.ID || 'N/A' %></span>
+                        <span><%= user ? (user.ID || user.id || 'N/A') : 'N/A' %></span>
                     </div>
                     <div class="user-info-row">
                         <span class="user-info-label">Age:</span>
-                        <span><%= user.AGE || 'N/A' %></span>
+                        <span><%= user ? (user.AGE || user.age || 'N/A') : 'N/A' %></span>
                     </div>
                     <div class="user-info-row">
                         <span class="user-info-label">Email:</span>
-                        <span><%= user.EMAIL || 'N/A' %></span>
+                        <span><%= user ? (user.EMAIL || user.email || 'N/A') : 'N/A' %></span>
                     </div>
                     <div class="user-info-row">
                         <span class="user-info-label">Address:</span>
-                        <span><%= user.ADDRESS || 'N/A' %></span>
+                        <span><%= user ? (user.ADDRESS || user.address || 'N/A') : 'N/A' %></span>
                     </div>
                 </div>
 
@@ -226,7 +227,7 @@
                         <button class="action-btn btn-primary" id="purchaseButton">Purchase Ticket</button>
                     </a>
                     <form method="POST" action="/editprofile">
-                        <input type="hidden" name="id" value="<%= user.ID %>">
+                        <input type="hidden" name="id" value="<%= user ? (user.ID || user.id || '') : '' %>">
                         <button type="submit" class="action-btn btn-secondary">Edit Profile</button>
                     </form>
                 </div>

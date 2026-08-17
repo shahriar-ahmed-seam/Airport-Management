@@ -164,8 +164,9 @@
                 <ul id='MenuItems'>
                     <li><a href='/'>Home</a></li>
                     <li><a href='/service'>Services</a></li>
-                    <li><a href='/contact'>About Us</a></li>
-                    <li><a href='/contact'>Contact</a></li>
+                    <li><a href='/contact'>About & Contact</a></li>
+                    <li><a href='/management'>Management</a></li>
+                    <li><a href='/logout'>Log Out</a></li>
                 </ul>
             </nav>
         </div>
@@ -176,31 +177,31 @@
             <div class="admin-card">
                 <img src="/images/img1.jpg" alt="Admin Profile" class="admin-avatar">
                 <h2 class="admin-name">
-                    <%= admin.FIRST_NAME || '' %> <%= admin.LAST_NAME || '' %>
+                    <%= admin ? (admin.FIRST_NAME || admin.first_name || '') : '' %> <%= admin ? (admin.LAST_NAME || admin.last_name || '') : '' %>
                 </h2>
 
                 <div class="admin-info-list">
                     <div class="admin-info-row">
                         <span class="admin-info-label">Admin ID:</span>
-                        <span><%= admin.ID || 'N/A' %></span>
+                        <span><%= admin ? (admin.ID || admin.id || 'N/A') : 'N/A' %></span>
                     </div>
-                    <% if (admin.SALARY || admin.Salary) { %>
+                    <% if (admin && (admin.SALARY || admin.salary || admin.Salary)) { %>
                     <div class="admin-info-row">
                         <span class="admin-info-label">Salary:</span>
-                        <span>$<%= admin.SALARY || admin.Salary %></span>
+                        <span>$<%= admin.SALARY || admin.salary || admin.Salary %></span>
                     </div>
                     <% } %>
                     <div class="admin-info-row">
                         <span class="admin-info-label">Email:</span>
-                        <span><%= admin.EMAIL || 'N/A' %></span>
+                        <span><%= admin ? (admin.EMAIL || admin.email || 'N/A') : 'N/A' %></span>
                     </div>
                     <div class="admin-info-row">
                         <span class="admin-info-label">Address:</span>
-                        <span><%= admin.ADDRESS || 'N/A' %></span>
+                        <span><%= admin ? (admin.ADDRESS || admin.address || 'N/A') : 'N/A' %></span>
                     </div>
                 </div>
 
-                <a href="/management" class="action-btn">Go to Management</a>
+                <a href="/management" class="action-btn">Go to Management Portal</a>
             </div>
         </div>
     </div>

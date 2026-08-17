@@ -75,7 +75,7 @@
         }
 
         .search-container {
-            max-width: 480px;
+            max-width: 500px;
             margin: 0 auto;
             padding: 0 20px;
         }
@@ -118,6 +118,12 @@
             border-color: #F3C693;
         }
 
+        .form-hint {
+            font-size: 13px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+
         .search-btn {
             width: 100%;
             padding: 12px 0;
@@ -139,14 +145,15 @@
         #flightInfo {
             display: none;
             margin-top: 20px;
-            padding: 15px;
+            padding: 18px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(243, 198, 147, 0.4);
             border-radius: 8px;
             color: #F3C693;
-            font-size: 20px;
+            font-size: 18px;
             text-align: center;
             font-weight: bold;
+            line-height: 1.5;
         }
 
         .plane-wrapper {
@@ -200,25 +207,36 @@
                 <ul id='MenuItems'>
                     <li><a href='/'>Home</a></li>
                     <li><a href='/service'>Services</a></li>
-                    <li><a href='/contact'>About Us</a></li>
-                    <li><a href='/contact'>Contact</a></li>
+                    <li><a href='/contact'>About & Contact</a></li>
+                    <% if (locals.currentAdmin) { %>
+                        <li><a href='/management'>Management</a></li>
+                        <li><a href='/logout'>Log Out</a></li>
+                    <% } else if (locals.currentUser) { %>
+                        <li><a href='/users'>My Profile</a></li>
+                        <li><a href='/logout'>Log Out</a></li>
+                    <% } else { %>
+                        <li><a href='/login_reg'>Sign In / Register</a></li>
+                        <li><a href='/admin_login'>Admin</a></li>
+                    <% } %>
                 </ul>
             </nav>
         </div>
 
-        <h1 class="page-title">Flight Finder</h1>
+        <h1 class="page-title">Flight Radar & Finder</h1>
 
         <div class="search-container">
             <div class="search-card">
                 <form id="flightForm">
                     <div class="form-group">
                         <label for="flightNumber">Flight Number:</label>
-                        <input type="text" id="flightNumber" name="flightNumber" placeholder="e.g. 101, 102" required>
+                        <input type="text" id="flightNumber" name="flightNumber" placeholder="e.g. 101, 102, 201" required>
+                        <div class="form-hint">Example: Try flight 101, 102, 103, 104, 201, 301, 401</div>
                     </div>
 
                     <div class="form-group">
-                        <label for="timeRange">Time / Date:</label>
-                        <input type="text" id="timeRange" name="timeRange" placeholder="e.g. 08:30 or 2024-05-10" required>
+                        <label for="timeRange">Flight Time (24h or Decimal):</label>
+                        <input type="text" id="timeRange" name="timeRange" placeholder="e.g. 11:00 or 11.5 or 18:30" required>
+                        <div class="form-hint">Example: Try 11:00 or 18:30 for Flight 101</div>
                     </div>
 
                     <button type="submit" class="search-btn">Find Flight</button>
@@ -254,7 +272,7 @@
                     }
                     const data = await response.json();
                     flightInfoDiv.style.display = "block";
-                    flightInfoDiv.textContent = data;
+                    flightInfoDiv.textContent = `Current Location: ${data}`;
                 } catch (error) {
                     console.error(error);
                     flightInfoDiv.style.display = "block";
