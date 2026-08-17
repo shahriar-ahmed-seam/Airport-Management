@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Airport Management - Contact Us</title>
+    <title>Airport Management - About & Contact</title>
     <style>
         * {
             margin: 0;
@@ -11,12 +12,18 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        body {
-            background-color: #f4f6f9;
+        .bg {
+            min-height: 100vh;
+            width: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(/images/p4.jpg);
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
         }
 
         .navigationBar {
-            background-color: #1a1a24;
+            background-color: rgba(0, 0, 0, 0.7);
             display: flex;
             align-items: center;
             padding: 15px 50px;
@@ -56,22 +63,28 @@
         }
 
         .hero-banner {
-            padding: 40px 20px;
+            padding: 35px 20px 20px 20px;
             text-align: center;
-            background: linear-gradient(135deg, #150886, #0c073e);
             color: white;
         }
 
         .hero-banner h1 {
             font-size: 38px;
+            color: #F3C693;
             margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .hero-banner p {
+            font-size: 17px;
+            color: #e0e0e0;
         }
 
         .section-title {
             text-align: center;
-            font-size: 28px;
-            margin: 40px 0 25px 0;
-            color: #222;
+            font-size: 26px;
+            margin: 25px 0 25px 0;
+            color: #ffffff;
         }
 
         .team-grid {
@@ -85,18 +98,20 @@
         }
 
         .card {
-            background: #ffffff;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: transform 0.3s, border-color 0.3s;
             display: flex;
             flex-direction: column;
         }
 
         .card:hover {
             transform: translateY(-6px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            border-color: #F3C693;
         }
 
         .card-img-wrapper {
@@ -120,19 +135,19 @@
 
         .card-content h2 {
             font-size: 22px;
-            color: #111;
+            color: #F3C693;
             margin-bottom: 5px;
         }
 
         .card-content .student-id {
-            color: #007bff;
+            color: #60a5fa;
             font-weight: 600;
             font-size: 14px;
             margin-bottom: 12px;
         }
 
         .card-content .quote {
-            color: #555;
+            color: #d1d5db;
             font-style: italic;
             font-size: 14px;
             line-height: 1.5;
@@ -141,7 +156,7 @@
         }
 
         .card-content .email {
-            color: #777;
+            color: #9ca3af;
             font-size: 14px;
             margin-bottom: 18px;
         }
@@ -165,53 +180,70 @@
         }
     </style>
 </head>
+
 <body>
-    <div class="navigationBar">
-        <div>
-            <a href='/'>DHAKA AIRPORT</a>
-        </div>
-        <nav>
-            <ul id='MenuItems'>
-                <li><a href='/'>Home</a></li>
-                <li><a href='/service'>Services</a></li>
-                <li><a href='/contact'>About Us</a></li>
-                <li><a href='/contact'>Contact</a></li>
-            </ul>
-        </nav>
-    </div>
-
-    <div class="hero-banner">
-        <h1>Contact & Team</h1>
-    </div>
-
-    <h2 class="section-title">Our Team</h2>
-
-    <div class="team-grid">
-        <div class="card">
-            <div class="card-img-wrapper">
-                <img src="/images/seam.jpg" alt="Shahriar Ahmed Seam">
+    <div class="bg">
+        <div class="navigationBar">
+            <div>
+                <a href='/'>DHAKA AIRPORT</a>
             </div>
-            <div class="card-content">
-                <h2>Shahriar Ahmed Seam</h2>
-                <div class="student-id">Student ID: 2005093</div>
-                <div class="quote">"Life is like a box of chocolates. You never know what you're gonna get."</div>
-                <div class="email">shahriarseam@gmail.com</div>
-                <a href="https://www.facebook.com/00sHaHriAr00" target="_blank" class="facebook-btn">Facebook Profile</a>
-            </div>
+            <nav>
+                <ul id='MenuItems'>
+                    <li><a href='/'>Home</a></li>
+                    <li><a href='/service'>Services</a></li>
+                    <li><a href='/contact'>About & Contact</a></li>
+                    <% if (locals.currentUser) { %>
+                        <li><a href='/users'>My Profile</a></li>
+                        <li><a href='/logout'>Log Out</a></li>
+                        <% } else if (locals.currentAdmin) { %>
+                            <li><a href='/admin'>Admin Portal</a></li>
+                            <li><a href='/logout'>Log Out</a></li>
+                            <% } else { %>
+                                <li><a href='/login_reg'>Sign In / Register</a></li>
+                                <li><a href='/admin_login'>Admin</a></li>
+                                <% } %>
+                </ul>
+            </nav>
         </div>
 
-        <div class="card">
-            <div class="card-img-wrapper">
-                <img src="/images/taky.jpg" alt="Taky Shahriar">
+        <div class="hero-banner">
+            <h1>About Us & Contact</h1>
+            <p>Hazrat Shahjalal International Airport Management System Project Team</p>
+        </div>
+
+        <h2 class="section-title">Development Team</h2>
+
+        <div class="team-grid">
+            <div class="card">
+                <div class="card-img-wrapper">
+                    <img src="/images/seam.jpg" alt="Shahriar Ahmed Seam">
+                </div>
+                <div class="card-content">
+                    <h2>Shahriar Ahmed Seam</h2>
+                    <div class="student-id">Student ID: 2005093</div>
+                    <div class="quote">"Life is like a box of chocolates. You never know what you're gonna get."</div>
+                    <div class="email">shahriarseam@gmail.com</div>
+                    <a href="https://www.facebook.com/shahriar.ahmed.seam" target="_blank" class="facebook-btn">Facebook
+                        Profile</a>
+                </div>
             </div>
-            <div class="card-content">
-                <h2>Taky Shahriar</h2>
-                <div class="student-id">Student ID: 2005098</div>
-                <div class="quote">"Life is like riding a bicycle. To keep your balance, you must keep moving."</div>
-                <div class="email">taky.buet.cse@gmail.com</div>
-                <a href="https://www.facebook.com/Java107?mibextid=ZbWKwL" target="_blank" class="facebook-btn">Facebook Profile</a>
+
+            <div class="card">
+                <div class="card-img-wrapper">
+                    <img src="/images/taky.jpg" alt="Taky Shahriar">
+                </div>
+                <div class="card-content">
+                    <h2>Taky Shahriar</h2>
+                    <div class="student-id">Student ID: 2005098</div>
+                    <div class="quote">"Life is like riding a bicycle. To keep your balance, you must keep moving."
+                    </div>
+                    <div class="email">taky.buet.cse@gmail.com</div>
+                    <a href="https://www.facebook.com/Java107?mibextid=ZbWKwL" target="_blank"
+                        class="facebook-btn">Facebook Profile</a>
+                </div>
             </div>
         </div>
     </div>
 </body>
+
 </html>
