@@ -96,3 +96,12 @@ CREATE TABLE DeletedEmployees(
     Email VARCHAR2(50) NOT NULL,
     Address VARCHAR2(50) NOT NULL
 );
+
+CREATE TABLE BookedSeats(
+    Flight_No NUMBER(5) NOT NULL,
+    Flight_Date DATE NOT NULL,
+    Seat_No VARCHAR2(20) NOT NULL,
+    Passenger_ID NUMBER(5),
+    Booking_Time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(Flight_No, Flight_Date, Seat_No)
+);

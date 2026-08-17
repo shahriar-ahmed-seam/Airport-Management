@@ -69,6 +69,13 @@
             font-weight: bold;
         }
 
+        .flight-badge {
+            text-align: center;
+            color: #ffffff;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
         .seat-section {
             max-width: 680px;
             margin: 0 auto 40px auto;
@@ -88,7 +95,7 @@
         .seat-legend {
             display: flex;
             justify-content: center;
-            gap: 30px;
+            gap: 25px;
             margin-bottom: 20px;
             font-size: 14px;
             color: #ddd;
@@ -112,6 +119,10 @@
 
         .legend-sel {
             background-color: #28a745;
+        }
+
+        .legend-booked {
+            background-color: #555555;
         }
 
         #seatPlan {
@@ -142,13 +153,21 @@
             transition: transform 0.2s, background-color 0.2s;
         }
 
-        .seat-button:hover {
+        .seat-button:hover:not(:disabled) {
             transform: scale(1.08);
         }
 
         .seat-button.selected {
             background-color: #28a745;
             border-color: #4ade80;
+        }
+
+        .seat-button.booked {
+            background-color: #555555;
+            color: #888888;
+            cursor: not-allowed;
+            border-color: #444444;
+            opacity: 0.6;
         }
 
         .aisle-gap {
@@ -214,6 +233,12 @@
 
         <h1 class="page-title">Airplane Seat Booking</h1>
 
+        <% if (locals.booking) { %>
+            <div class="flight-badge">
+                Flight <%= booking.ticket ? (booking.ticket.FLIGHT_NO || booking.ticket.flight_no) : '101' %> | <%= booking.source %> &rarr; <%= booking.destination %> (<%= booking.flightDate %>)
+            </div>
+        <% } %>
+
         <div class="seat-section">
             <div class="seat-card">
                 <div class="seat-legend">
@@ -224,6 +249,10 @@
                     <div class="legend-item">
                         <div class="legend-box legend-sel"></div>
                         <span>Selected</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box legend-booked"></div>
+                        <span>Booked / Sold</span>
                     </div>
                 </div>
 
@@ -241,6 +270,7 @@
         const purchaseButton = document.getElementById("purchaseButton");
         const popup = document.getElementById("popup");
         const selectedSeats = new Set();
+        const alreadyBooked = new Set(<%- JSON.stringify(locals.bookedSeats || []) %>);
 
         const numRows = 10;
         const numCols = 6;
@@ -256,13 +286,21 @@
                     rowDiv.appendChild(aisle);
                 }
 
+                const seatId = `${row}-${col}`;
                 const seatButton = document.createElement("button");
                 seatButton.className = "seat-button";
-                seatButton.id = `${row}-${col}`;
-                seatButton.textContent = `${row}-${col}`;
-                seatButton.addEventListener("click", function () {
-                    toggleSeat(this);
-                });
+                seatButton.id = seatId;
+                seatButton.textContent = seatId;
+
+                if (alreadyBooked.has(seatId)) {
+                    seatButton.classList.add("booked");
+                    seatButton.disabled = true;
+                    seatButton.title = "This seat is already booked";
+                } else {
+                    seatButton.addEventListener("click", function () {
+                        toggleSeat(this);
+                    });
+                }
                 rowDiv.appendChild(seatButton);
             }
             seatPlan.appendChild(rowDiv);
@@ -289,7 +327,7 @@
             document.body.removeChild(element);
         }
 
-        purchaseButton.addEventListener("click", function () {
+        purchaseButton.addEventListener("click", async function () {
             if (selectedSeats.size === 0) {
                 alert("Please select at least one seat before purchasing.");
                 return;
@@ -297,7 +335,19 @@
 
             const seatNames = Array.from(selectedSeats);
             const now = new Date().toLocaleString();
-            const ticketContent = 
+
+            try {
+                const response = await fetch('/book-seats', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ seatNames })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Booking failed on server');
+                }
+
+                const ticketContent = 
 `======================================================================
                  HAZRAT SHAHJALAL INTERNATIONAL AIRPORT               
                        ELECTRONIC BOARDING PASS                       
@@ -305,11 +355,9 @@
 PASSENGER / BOOKING DETAILS:
 ----------------------------------------------------------------------
 Carrier / Airline  : Biman Bangladesh Airlines
-Flight Route       : DAC (Dhaka) -> Selected Destination
 Selected Seat(s)   : ${seatNames.join(", ")}
 Total Seats        : ${seatNames.length}
-Booking Status     : CONFIRMED
-Class              : ECONOMY / BUSINESS
+Booking Status     : CONFIRMED & RECORDED
 Gate               : Gate 04 (Terminal 2)
 Issue Date & Time  : ${now}
 ======================================================================
@@ -321,14 +369,18 @@ IMPORTANT TRAVEL NOTICE:
               WISH YOU A SAFE AND PLEASANT JOURNEY!
 ======================================================================`;
 
-            downloadTextFile("Ticket.txt", ticketContent);
+                downloadTextFile("Ticket.txt", ticketContent);
 
-            popup.style.display = "block";
+                popup.style.display = "block";
 
-            setTimeout(function () {
-                popup.style.display = "none";
-                window.location.href = '/explore';
-            }, 2000);
+                setTimeout(function () {
+                    popup.style.display = "none";
+                    window.location.href = '/explore';
+                }, 2000);
+            } catch (err) {
+                console.error(err);
+                alert("An error occurred while confirming your seat booking.");
+            }
         });
     </script>
 </body>

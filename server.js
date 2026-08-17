@@ -139,8 +139,8 @@ app.get('/users', async (req, res) => {
         return res.redirect('/login_reg');
     }
     try {
-        const userId = req.session.user.ID || req.session.user.id;
-        const result = await db.query('SELECT * FROM Passenger WHERE ID = :id', { id: userId });
+        const userId = req.session.user.ID || req.session.user.id || req.session.user[0];
+        const result = await db.query('SELECT * FROM Passenger WHERE ID = :id', { id: parseInt(userId, 10) });
         if (result.rows.length > 0) {
             req.session.user = result.rows[0];
             res.render('users', { user: result.rows[0] });
@@ -261,7 +261,7 @@ app.post('/delete', async (req, res) => {
 });
 
 app.post('/editprofile', async (req, res) => {
-    const targetId = req.body.id || (req.session.user ? (req.session.user.ID || req.session.user.id) : null);
+    const targetId = req.body.id || (req.session.user ? (req.session.user.ID || req.session.user.id || req.session.user[0]) : null);
     if (!targetId) {
         return res.redirect('/login_reg');
     }
@@ -279,7 +279,7 @@ app.get('/editprofile', async (req, res) => {
     if (!req.session.user) {
         return res.redirect('/login_reg');
     }
-    const targetId = req.session.user.ID || req.session.user.id;
+    const targetId = req.session.user.ID || req.session.user.id || req.session.user[0];
     try {
         const result = await db.query('SELECT * FROM Passenger WHERE ID = :id', { id: parseInt(targetId, 10) });
         const user = result.rows[0] || req.session.user;
@@ -492,8 +492,73 @@ app.post('/seatplan', async (req, res) => {
     }
 });
 
-app.get('/seatplan', (req, res) => {
-    res.render('seatplan', { booking: req.session.booking || null });
+app.get('/seatplan', async (req, res) => {
+    const booking = req.session.booking || {
+        source: 'DHAKA',
+        destination: 'LONDON',
+        flightDate: new Date().toISOString().split('T')[0],
+        ticket: { FLIGHT_NO: 101 }
+    };
+    const flightNo = booking.ticket ? (booking.ticket.FLIGHT_NO || booking.ticket.flight_no || 101) : 101;
+    const flightDate = booking.flightDate || new Date().toISOString().split('T')[0];
+
+    try {
+        const bookedResult = await db.query(
+            `SELECT Seat_No FROM BookedSeats WHERE Flight_No = :flightNo`,
+            { flightNo: parseInt(flightNo, 10) }
+        );
+        const bookedSeats = bookedResult.rows.map(r => r.SEAT_NO || r.seat_no || r[0] || r.Seat_No);
+        res.render('seatplan', { booking, bookedSeats });
+    } catch (err) {
+        console.error('Error fetching booked seats:', err);
+        res.render('seatplan', { booking, bookedSeats: [] });
+    }
+});
+
+app.post('/book-seats', async (req, res) => {
+    const seatNames = req.body.seatNames || [];
+    if (!Array.isArray(seatNames) || seatNames.length === 0) {
+        return res.status(400).json({ error: 'No seats provided' });
+    }
+
+    const booking = req.session.booking || {
+        source: 'DHAKA',
+        destination: 'LONDON',
+        flightDate: new Date().toISOString().split('T')[0],
+        ticket: { FLIGHT_NO: 101 }
+    };
+    const flightNo = parseInt(booking.ticket ? (booking.ticket.FLIGHT_NO || booking.ticket.flight_no || 101) : 101, 10);
+    const flightDate = booking.flightDate || new Date().toISOString().split('T')[0];
+    const passengerId = req.session.user ? (req.session.user.ID || req.session.user.id || req.session.user[0] || null) : null;
+
+    try {
+        for (const seatNo of seatNames) {
+            await db.query(
+                `INSERT INTO BookedSeats (Flight_No, Flight_Date, Seat_No, Passenger_ID) 
+                 VALUES (:flightNo, TO_DATE(:flightDate, 'YYYY-MM-DD'), :seatNo, :passengerId)
+                 ON CONFLICT (Flight_No, Flight_Date, Seat_No) DO NOTHING`,
+                {
+                    flightNo,
+                    flightDate,
+                    seatNo: String(seatNo).trim(),
+                    passengerId: passengerId ? parseInt(passengerId, 10) : null
+                }
+            );
+        }
+
+        await db.query(
+            `UPDATE Ticket SET Capacity = GREATEST(Capacity - :numSeats, 0) WHERE Flight_No = :flightNo`,
+            {
+                numSeats: seatNames.length,
+                flightNo
+            }
+        );
+
+        res.json({ success: true, bookedCount: seatNames.length });
+    } catch (error) {
+        console.error('Error booking seats:', error);
+        res.status(500).json({ error: 'Database booking error' });
+    }
 });
 
 app.get('/explore', (req, res) => {

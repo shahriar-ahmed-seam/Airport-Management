@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS BookedSeats CASCADE;
 DROP TABLE IF EXISTS Location CASCADE;
 DROP TABLE IF EXISTS Ticket CASCADE;
 DROP TABLE IF EXISTS AirPlane CASCADE;
@@ -101,4 +102,13 @@ CREATE TABLE DeletedEmployees(
     Salary NUMERIC(12, 2) NOT NULL,
     Email VARCHAR(150) NOT NULL,
     Address VARCHAR(200) NOT NULL
+);
+
+CREATE TABLE BookedSeats(
+    Flight_No INT NOT NULL,
+    Flight_Date DATE NOT NULL,
+    Seat_No VARCHAR(20) NOT NULL,
+    Passenger_ID INT,
+    Booking_Time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY(Flight_No, Flight_Date, Seat_No)
 );
