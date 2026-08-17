@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Airport Management - Purchase Ticket</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .bg {
+            min-height: 100vh;
+            width: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(/images/p5.jpg);
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        .navigationBar {
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            padding: 15px 50px;
+        }
+
+        .navigationBar a {
+            text-decoration: none;
+            color: rgb(150, 164, 210);
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        nav {
+            flex: 1;
+            text-align: right;
+        }
+
+        nav ul {
+            display: inline-block;
+            list-style: none;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 18px;
+            color: rgb(243, 242, 242);
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #F3C693;
+        }
+
+        .page-title {
+            margin: 30px 0 20px 0;
+            font-size: 38px;
+            text-align: center;
+            color: #F3C693;
+            font-weight: bold;
+        }
+
+        .booking-container {
+            max-width: 500px;
+            margin: 0 auto 40px auto;
+            padding: 0 20px;
+        }
+
+        .booking-card {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            color: #F3C693;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .form-group select,
+        .form-group input[type="date"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-size: 16px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .form-group select option {
+            background-color: #1a1a24;
+            color: #ffffff;
+        }
+
+        .form-group select:focus,
+        .form-group input[type="date"]:focus {
+            border-color: #F3C693;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 13px 0;
+            margin-top: 10px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg">
+        <div class="navigationBar">
+            <div>
+                <a href='/'>DHAKA AIRPORT</a>
+            </div>
+            <nav>
+                <ul id='MenuItems'>
+                    <li><a href='/'>Home</a></li>
+                    <li><a href='/service'>Services</a></li>
+                    <li><a href='/contact'>About Us</a></li>
+                    <li><a href='/contact'>Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <h1 class="page-title">Purchase Ticket</h1>
+
+        <div class="booking-container">
+            <div class="booking-card">
+                <form id="purchaseForm">
+                    <div class="form-group" id="source">
+                        <label for="sourceCity">Departure Airport (Source)</label>
+                        <select id="sourceCity" name="sourceCity">
+                            <option value="DHAKA">DHAKA</option>
+                            <option value="SYLHET">SYLHET</option>
+                            <option value="RANGPUR">RANGPUR</option>
+                            <option value="JASHOR">JASHOR</option>
+                            <option value="RIYAD">RIYAD</option>
+                            <option value="LONDON">LONDON</option>
+                            <option value="DUBAI">DUBAI</option>
+                            <option value="LOS ANGELES">LOS ANGELES</option>
+                            <option value="NEWYORK">NEWYORK</option>
+                            <option value="DELLE">DELLE</option>
+                            <option value="MADRID">MADRID</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="destination">
+                        <label for="destinationCity">Arrival Airport (Destination)</label>
+                        <select id="destinationCity" name="destinationCity">
+                            <option value="LONDON" selected>LONDON</option>
+                            <option value="DHAKA">DHAKA</option>
+                            <option value="SYLHET">SYLHET</option>
+                            <option value="RANGPUR">RANGPUR</option>
+                            <option value="JASHOR">JASHOR</option>
+                            <option value="RIYAD">RIYAD</option>
+                            <option value="DUBAI">DUBAI</option>
+                            <option value="LOS ANGELES">LOS ANGELES</option>
+                            <option value="NEWYORK">NEWYORK</option>
+                            <option value="DELLE">DELLE</option>
+                            <option value="MADRID">MADRID</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="flightDate">Flight Date</label>
+                        <input type="date" id="flightDate" name="flightDate" required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Search Seats & Book</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('purchaseForm');
+            const sourceSelect = document.getElementById('sourceCity');
+            const destinationSelect = document.getElementById('destinationCity');
+            const dateInput = document.getElementById('flightDate');
+
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                const sourceValue = sourceSelect.value;
+                const destinationValue = destinationSelect.value;
+                const flightDate = dateInput.value;
+
+                if (sourceValue === destinationValue) {
+                    alert('Source and destination cannot be the same.');
+                    return;
+                }
+
+                const ticketData = {
+                    source: sourceValue,
+                    destination: destinationValue,
+                    flightDate: flightDate
+                };
+
+                fetch('/seatplan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(ticketData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.availableTickets) {
+                        window.location.href = '/seatplan';
+                    } else {
+                        alert('No plane available on that date');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    </script>
+</body>
+</html>

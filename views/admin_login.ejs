@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Airport Management - Admin Login</title>
+    <link rel="stylesheet" href="/css/admin_login.css">
+</head>
+<body>
+    <div class="bg">
+        <div class="navigationBar">
+            <div>
+                <a href='/'>DHAKA AIRPORT</a>
+            </div>
+            <nav>
+                <ul id='MenuItems'>
+                    <li><a href='/'>Home</a></li>
+                    <li><a href='/service'>Services</a></li>
+                    <li><a href='/contact'>About Us</a></li>
+                    <li><a href='/contact'>Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div id='login-form' class='login-page'>
+            <div class="form-box">
+                <div class='button-box'>
+                    <div id='btn'></div>
+                    <button type='button' class='toggle-btn'>Admin Sign In</button>
+                </div>
+                <form id='login' class='input-group-login' action="/admin" method="POST">
+                    <input type='number' class='input-field' placeholder='Admin ID' name='ID' required>
+                    <input type='password' class='input-field' placeholder='Enter Password' name='password' required>
+                    <input type='text' class='input-field' placeholder='Security Code' name='securitycode' required>
+                    <button type='submit' class='submit-btn'>Log in</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="/js/script.js"></script>
+</body>
+</html>

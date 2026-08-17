@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Airport Management - Seat Plan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .bg {
+            min-height: 100vh;
+            width: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.65)), url(/images/p5.jpg);
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        .navigationBar {
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            padding: 15px 50px;
+        }
+
+        .navigationBar a {
+            text-decoration: none;
+            color: rgb(150, 164, 210);
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        nav {
+            flex: 1;
+            text-align: right;
+        }
+
+        nav ul {
+            display: inline-block;
+            list-style: none;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 18px;
+            color: rgb(243, 242, 242);
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #F3C693;
+        }
+
+        .page-title {
+            margin: 25px 0 10px 0;
+            font-size: 34px;
+            text-align: center;
+            color: #F3C693;
+            font-weight: bold;
+        }
+
+        .seat-section {
+            max-width: 680px;
+            margin: 0 auto 40px auto;
+            padding: 0 15px;
+        }
+
+        .seat-card {
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        .seat-legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #ddd;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-box {
+            width: 22px;
+            height: 22px;
+            border-radius: 4px;
+        }
+
+        .legend-avail {
+            background-color: rgb(171, 38, 38);
+        }
+
+        .legend-sel {
+            background-color: #28a745;
+        }
+
+        #seatPlan {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .seat-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .seat-button {
+            width: 48px;
+            height: 38px;
+            border-radius: 6px;
+            background-color: rgb(171, 38, 38);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+
+        .seat-button:hover {
+            transform: scale(1.08);
+        }
+
+        .seat-button.selected {
+            background-color: #28a745;
+            border-color: #4ade80;
+        }
+
+        .aisle-gap {
+            width: 24px;
+        }
+
+        .purchase-btn {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 13px 40px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 15px;
+        }
+
+        .purchase-btn:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: #4ade80;
+            border: 1px solid #4ade80;
+            padding: 25px 40px;
+            border-radius: 8px;
+            font-size: 20px;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg">
+        <div class="navigationBar">
+            <div>
+                <a href='/'>DHAKA AIRPORT</a>
+            </div>
+            <nav>
+                <ul id='MenuItems'>
+                    <li><a href='/'>Home</a></li>
+                    <li><a href='/service'>Services</a></li>
+                    <li><a href='/contact'>About Us</a></li>
+                    <li><a href='/contact'>Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <h1 class="page-title">Airplane Seat Booking</h1>
+
+        <div class="seat-section">
+            <div class="seat-card">
+                <div class="seat-legend">
+                    <div class="legend-item">
+                        <div class="legend-box legend-avail"></div>
+                        <span>Available</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box legend-sel"></div>
+                        <span>Selected</span>
+                    </div>
+                </div>
+
+                <div id="seatPlan"></div>
+
+                <button class="purchase-btn" id="purchaseButton">Confirm & Purchase</button>
+            </div>
+        </div>
+
+        <div id="popup">Purchase Confirmed! Downloading Ticket...</div>
+    </div>
+
+    <script>
+        const seatPlan = document.getElementById("seatPlan");
+        const purchaseButton = document.getElementById("purchaseButton");
+        const popup = document.getElementById("popup");
+        const selectedSeats = new Set();
+
+        const numRows = 10;
+        const numCols = 6;
+
+        for (let row = 1; row <= numRows; row++) {
+            const rowDiv = document.createElement("div");
+            rowDiv.className = "seat-row";
+
+            for (let col = 1; col <= numCols; col++) {
+                if (col === 4) {
+                    const aisle = document.createElement("div");
+                    aisle.className = "aisle-gap";
+                    rowDiv.appendChild(aisle);
+                }
+
+                const seatButton = document.createElement("button");
+                seatButton.className = "seat-button";
+                seatButton.id = `${row}-${col}`;
+                seatButton.textContent = `${row}-${col}`;
+                seatButton.addEventListener("click", function () {
+                    toggleSeat(this);
+                });
+                rowDiv.appendChild(seatButton);
+            }
+            seatPlan.appendChild(rowDiv);
+        }
+
+        function toggleSeat(button) {
+            const seatName = button.id;
+            if (selectedSeats.has(seatName)) {
+                button.classList.remove("selected");
+                selectedSeats.delete(seatName);
+            } else {
+                button.classList.add("selected");
+                selectedSeats.add(seatName);
+            }
+        }
+
+        function downloadTextFile(filename, text) {
+            const element = document.createElement("a");
+            element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(text));
+            element.setAttribute("download", filename);
+            element.style.display = "none";
+            document.body.appendChild(element);
+            element.click();
+            document.body.removeChild(element);
+        }
+
+        purchaseButton.addEventListener("click", function () {
+            if (selectedSeats.size === 0) {
+                alert("Please select at least one seat before purchasing.");
+                return;
+            }
+
+            const seatNames = Array.from(selectedSeats);
+            const seatData = "Selected Seats: " + seatNames.join(", ");
+            downloadTextFile("selected_seats.txt", seatData);
+
+            popup.style.display = "block";
+
+            setTimeout(function () {
+                popup.style.display = "none";
+
+                var fileUrl = '/Ticket.txt';
+                var a = document.createElement('a');
+                a.href = fileUrl;
+                a.download = 'Ticket.txt';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                window.location.href = '/explore';
+            }, 2000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,40 @@
+.bg
+{
+    height: 100%;
+	width: 100%;
+	background-image: linear-gradient(rgba(0,0,0,0.4),rgba(0,0,0,0.4)),url(/images/2.jpg);
+	background-position: center;
+	background-size: cover;
+	position: absolute;
+}
+
+.plane
+{
+    position: relative;
+    bottom:-260px;
+    scale: 0.80;
+    animation: animatedman 10s linear infinite;
+}
+
+@keyframes animatedman
+{
+    0%
+    {
+        transform: translateX(calc(100% - 100vw));
+    }
+    50%
+    {
+        transform: translateX(calc(100% + 100vw));
+    }
+    50.01%
+    {
+        transform: translateX(calc(100% + 100vw))
+        rotateY(180deg);
+    }
+    100%
+    {
+        transform: translateX(calc(100% - 100vw))
+        rotateY(180deg);
+    }
+
+}

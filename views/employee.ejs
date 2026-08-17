@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Airport Management - Employee Information</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .bg {
+            min-height: 100vh;
+            width: 100%;
+            background-color: #1a1a24;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(/images/p8.jpg);
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        .navigationBar {
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            padding: 15px 50px;
+        }
+
+        .navigationBar a {
+            text-decoration: none;
+            color: rgb(150, 164, 210);
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        nav {
+            flex: 1;
+            text-align: right;
+        }
+
+        nav ul {
+            display: inline-block;
+            list-style: none;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 18px;
+            color: rgb(243, 242, 242);
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #F3C693;
+        }
+
+        .page-title {
+            margin: 30px 0 20px 0;
+            font-size: 36px;
+            text-align: center;
+            color: #F3C693;
+            font-weight: bold;
+        }
+
+        .table-container {
+            max-width: 1100px;
+            margin: 0 auto 40px auto;
+            padding: 0 20px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        th {
+            background-color: rgba(243, 198, 147, 0.2);
+            color: #F3C693;
+            padding: 14px 12px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid rgba(243, 198, 147, 0.3);
+            text-align: center;
+        }
+
+        td {
+            padding: 12px 10px;
+            text-align: center;
+            font-size: 15px;
+            color: #f1f1f1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        tr:hover td {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .delete-button {
+            background-color: #dc3545;
+            color: #fff;
+            padding: 6px 14px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .delete-button:hover {
+            background-color: #bd2130;
+            transform: translateY(-1px);
+        }
+
+        .edit-button {
+            background-color: #28a745;
+            color: #fff;
+            padding: 6px 14px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .edit-button:hover {
+            background-color: #218838;
+            transform: translateY(-1px);
+        }
+
+        .top-action-bar {
+            max-width: 1100px;
+            margin: 0 auto 15px auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .back-link {
+            display: inline-block;
+            padding: 8px 18px;
+            background-color: #F3C693;
+            color: #222;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #e5b37b;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg">
+        <div class="navigationBar">
+            <div>
+                <a href='/'>DHAKA AIRPORT</a>
+            </div>
+            <nav>
+                <ul id='MenuItems'>
+                    <li><a href='/'>Home</a></li>
+                    <li><a href='/service'>Services</a></li>
+                    <li><a href='/contact'>About Us</a></li>
+                    <li><a href='/contact'>Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <h1 class="page-title">Employee Information</h1>
+
+        <div class="top-action-bar">
+            <a href="/management" class="back-link">Back to Management</a>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Salary</th>
+                        <th>Phone Number</th>
+                        <th>Address</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% for (let i = 0; i < passengers.length; i++) { %>
+                        <tr>
+                            <td><%= passengers[i][0] !== undefined ? passengers[i][0] : passengers[i].ID %></td>
+                            <td><%= passengers[i][1] !== undefined ? passengers[i][1] : passengers[i].FIRST_NAME %></td>
+                            <td><%= passengers[i][2] !== undefined ? passengers[i][2] : passengers[i].LAST_NAME %></td>
+                            <td>$<%= passengers[i][3] !== undefined ? passengers[i][3] : passengers[i].SALARY %></td>
+                            <td><%= passengers[i][4] !== undefined ? passengers[i][4] : passengers[i].PHONE_NUMBER %></td>
+                            <td><%= passengers[i][5] !== undefined ? passengers[i][5] : passengers[i].ADDRESS %></td>
+                            <td>
+                                <div class="action-buttons">
+                                    <form method="POST" action="/editemployee" style="display:inline;">
+                                        <input type="hidden" name="id" value="<%= passengers[i][0] !== undefined ? passengers[i][0] : passengers[i].ID %>">
+                                        <button type="submit" class="edit-button">Edit</button>
+                                    </form>
+                                    <form method="POST" action="/delete" style="display:inline;">
+                                        <input type="hidden" name="id" value="<%= passengers[i][0] !== undefined ? passengers[i][0] : passengers[i].ID %>">
+                                        <button type="submit" class="delete-button" onclick="return confirm('Are you sure you want to delete this employee?');">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    <% } %>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

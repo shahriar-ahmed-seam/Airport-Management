@@ -1,0 +1,106 @@
+-- PostgreSQL Tables Definition for Airport Management System
+
+DROP TABLE IF EXISTS Location CASCADE;
+DROP TABLE IF EXISTS Ticket CASCADE;
+DROP TABLE IF EXISTS AirPlane CASCADE;
+DROP TABLE IF EXISTS AirPort CASCADE;
+DROP TABLE IF EXISTS LoginAsAdmin CASCADE;
+DROP TABLE IF EXISTS Admins CASCADE;
+DROP TABLE IF EXISTS DeletedEmployees CASCADE;
+DROP TABLE IF EXISTS Employees CASCADE;
+DROP TABLE IF EXISTS LoginPsngr CASCADE;
+DROP TABLE IF EXISTS Passenger CASCADE;
+
+CREATE TABLE Passenger(
+    ID INT NOT NULL,
+    First_Name VARCHAR(50),
+    Last_Name VARCHAR(50) NOT NULL,
+    Age INT NOT NULL,
+    Email VARCHAR(50) NOT NULL,
+    Address VARCHAR(50) NOT NULL,
+    PRIMARY KEY(ID)
+);
+
+CREATE TABLE LoginPsngr(
+    ID INT PRIMARY KEY,
+    Password VARCHAR(50) NOT NULL,
+    FOREIGN KEY(ID) REFERENCES Passenger(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE Employees(
+    ID INT NOT NULL,
+    First_Name VARCHAR(50),
+    Last_Name VARCHAR(50) NOT NULL,
+    Salary NUMERIC(12, 2) NOT NULL,
+    Email VARCHAR(50) NOT NULL,
+    Address VARCHAR(50) NOT NULL,
+    PRIMARY KEY(ID)
+);
+
+CREATE TABLE Admins(
+    ID INT NOT NULL,
+    First_Name VARCHAR(50),
+    Last_Name VARCHAR(50) NOT NULL,
+    Salary NUMERIC(12, 2) NOT NULL,
+    Email VARCHAR(50) NOT NULL,
+    Address VARCHAR(50) NOT NULL,
+    PRIMARY KEY(ID),
+    FOREIGN KEY(ID) REFERENCES Employees(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE LoginAsAdmin(
+    ID INT NOT NULL,
+    Password VARCHAR(50) NOT NULL,
+    SecurityCode VARCHAR(50) NOT NULL,
+    PRIMARY KEY(ID, SecurityCode),
+    FOREIGN KEY(ID) REFERENCES Employees(ID) ON DELETE CASCADE
+);
+
+CREATE TABLE AirPort(
+    Total_Flight INT NOT NULL,
+    Name VARCHAR(50) NOT NULL,
+    ID INT NOT NULL,
+    City VARCHAR(50) NOT NULL,
+    TotalCapacity INT NOT NULL,
+    Country VARCHAR(50) NOT NULL,
+    PRIMARY KEY(ID)
+);
+
+CREATE TABLE AirPlane(
+    Flight_No INT PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    Capacity INT,
+    Source VARCHAR(50) NOT NULL,
+    Destination VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Ticket(
+    Flight_No INT NOT NULL,
+    Source VARCHAR(50) NOT NULL,
+    Destination VARCHAR(50) NOT NULL,
+    Flight_Date DATE NOT NULL,
+    Flight_Time VARCHAR(50) NOT NULL,
+    Class VARCHAR(50) NOT NULL,
+    Capacity INT NOT NULL,
+    Price NUMERIC(10, 2) NOT NULL,
+    PRIMARY KEY(Flight_No, Class),
+    FOREIGN KEY(Flight_No) REFERENCES AirPlane(Flight_No) ON DELETE CASCADE
+);
+
+CREATE TABLE Location(
+    Flight_No INT NOT NULL,
+    Start_Time NUMERIC(5,2),
+    End_Time NUMERIC(5,2),
+    Place VARCHAR(50),
+    PRIMARY KEY(Flight_No, Place),
+    FOREIGN KEY(Flight_No) REFERENCES AirPlane(Flight_No) ON DELETE CASCADE
+);
+
+CREATE TABLE DeletedEmployees(
+    ID INT NOT NULL,
+    First_Name VARCHAR(50) NOT NULL,
+    Last_Name VARCHAR(50) NOT NULL,
+    Salary NUMERIC(12, 2) NOT NULL,
+    Email VARCHAR(50) NOT NULL,
+    Address VARCHAR(50) NOT NULL
+);

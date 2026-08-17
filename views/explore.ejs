@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Airport Management - Explore Destinations</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .bg {
+            min-height: 100vh;
+            width: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url(/images/p4.jpg);
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        .navigationBar {
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            padding: 15px 50px;
+        }
+
+        .navigationBar a {
+            text-decoration: none;
+            color: rgb(150, 164, 210);
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        nav {
+            flex: 1;
+            text-align: right;
+        }
+
+        nav ul {
+            display: inline-block;
+            list-style: none;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 18px;
+            color: rgb(243, 242, 242);
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #F3C693;
+        }
+
+        .explore-header {
+            text-align: center;
+            color: #F3C693;
+            font-size: 36px;
+            margin: 30px 0 25px 0;
+            font-weight: bold;
+        }
+
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto 50px auto;
+            padding: 0 25px;
+        }
+
+        .gallery-item {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            overflow: hidden;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            border-color: #F3C693;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-desc {
+            padding: 12px 10px;
+            text-align: center;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg">
+        <div class="navigationBar">
+            <div>
+                <a href='/'>DHAKA AIRPORT</a>
+            </div>
+            <nav>
+                <ul id='MenuItems'>
+                    <li><a href='/'>Home</a></li>
+                    <li><a href='/service'>Services</a></li>
+                    <li><a href='/contact'>About Us</a></li>
+                    <li><a href='/contact'>Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <h1 class="explore-header">Explore Top Destinations</h1>
+
+        <div class="gallery-container">
+            <div class="gallery-item">
+                <img src="/images/3.jpg" alt="Cinque Terre">
+                <div class="gallery-desc">Cinque Terre, Italy</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/4.jpg" alt="Amazon Rainforest">
+                <div class="gallery-desc">Amazon Rainforest, Brazil</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/5.jpg" alt="Aurora Borealis">
+                <div class="gallery-desc">Aurora Borealis, Norway</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/6.jpg" alt="Swiss Alps">
+                <div class="gallery-desc">Swiss Alps, Switzerland</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/1.jpg" alt="Santorini">
+                <div class="gallery-desc">Santorini, Greece</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/2.jpg" alt="Petra">
+                <div class="gallery-desc">Petra, Jordan</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/6.jpg" alt="Bora Bora">
+                <div class="gallery-desc">Bora Bora, French Polynesia</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/3.jpg" alt="Victoria Falls">
+                <div class="gallery-desc">Victoria Falls, Zambia</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/4.jpg" alt="Great Wall">
+                <div class="gallery-desc">Great Wall of China</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/5.jpg" alt="Grand Canyon">
+                <div class="gallery-desc">Grand Canyon, USA</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/6.jpg" alt="Machu Picchu">
+                <div class="gallery-desc">Machu Picchu, Peru</div>
+            </div>
+
+            <div class="gallery-item">
+                <img src="/images/1.jpg" alt="Venice">
+                <div class="gallery-desc">Venice, Italy</div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

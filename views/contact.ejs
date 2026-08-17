@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Airport Management - Contact Us</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+        }
+
+        .navigationBar {
+            background-color: #1a1a24;
+            display: flex;
+            align-items: center;
+            padding: 15px 50px;
+        }
+
+        .navigationBar a {
+            text-decoration: none;
+            color: rgb(150, 164, 210);
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        nav {
+            flex: 1;
+            text-align: right;
+        }
+
+        nav ul {
+            display: inline-block;
+            list-style: none;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 18px;
+            color: rgb(243, 242, 242);
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #F3C693;
+        }
+
+        .hero-banner {
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #150886, #0c073e);
+            color: white;
+        }
+
+        .hero-banner h1 {
+            font-size: 38px;
+            margin-bottom: 8px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 28px;
+            margin: 40px 0 25px 0;
+            color: #222;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 420px));
+            justify-content: center;
+            gap: 35px;
+            max-width: 1000px;
+            margin: 0 auto 50px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-img-wrapper {
+            width: 100%;
+            height: 320px;
+            overflow: hidden;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-content {
+            padding: 25px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-content h2 {
+            font-size: 22px;
+            color: #111;
+            margin-bottom: 5px;
+        }
+
+        .card-content .student-id {
+            color: #007bff;
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+
+        .card-content .quote {
+            color: #555;
+            font-style: italic;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+            flex: 1;
+        }
+
+        .card-content .email {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 18px;
+        }
+
+        .facebook-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 10px 0;
+            background-color: #1877f2;
+            color: #ffffff;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: background-color 0.3s;
+        }
+
+        .facebook-btn:hover {
+            background-color: #1465cc;
+        }
+    </style>
+</head>
+<body>
+    <div class="navigationBar">
+        <div>
+            <a href='/'>DHAKA AIRPORT</a>
+        </div>
+        <nav>
+            <ul id='MenuItems'>
+                <li><a href='/'>Home</a></li>
+                <li><a href='/service'>Services</a></li>
+                <li><a href='/contact'>About Us</a></li>
+                <li><a href='/contact'>Contact</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="hero-banner">
+        <h1>Contact & Team</h1>
+    </div>
+
+    <h2 class="section-title">Our Team</h2>
+
+    <div class="team-grid">
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="/images/seam.jpg" alt="Shahriar Ahmed Seam">
+            </div>
+            <div class="card-content">
+                <h2>Shahriar Ahmed Seam</h2>
+                <div class="student-id">Student ID: 2005093</div>
+                <div class="quote">"Life is like a box of chocolates. You never know what you're gonna get."</div>
+                <div class="email">shahriarseam@gmail.com</div>
+                <a href="https://www.facebook.com/00sHaHriAr00" target="_blank" class="facebook-btn">Facebook Profile</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-img-wrapper">
+                <img src="/images/taky.jpg" alt="Taky Shahriar">
+            </div>
+            <div class="card-content">
+                <h2>Taky Shahriar</h2>
+                <div class="student-id">Student ID: 2005098</div>
+                <div class="quote">"Life is like riding a bicycle. To keep your balance, you must keep moving."</div>
+                <div class="email">taky.buet.cse@gmail.com</div>
+                <a href="https://www.facebook.com/Java107?mibextid=ZbWKwL" target="_blank" class="facebook-btn">Facebook Profile</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

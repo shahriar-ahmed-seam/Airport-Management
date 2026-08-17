@@ -1,0 +1,55 @@
+body {
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+#source,
+#destination {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 180px 60px;
+    padding: 20px;
+    font-size: 18px;
+}
+
+#purchaseForm {
+    display: inline-block;
+    vertical-align: middle;
+    margin: 1px 60px;
+    padding: 20px;
+    font-size: 18px;
+}
+
+#source select,
+#destination select,
+#purchaseForm input[type="date"] {
+    font-size: 16px;
+    padding: 10px;
+    width: 200px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+#purchaseForm button {
+    background-color: #007BFF;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 18px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#purchaseForm button:hover {
+    background-color: #0056b3;
+}
+
+.bg {
+    height: 100%;
+    width: 100%;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url(/images/p5.jpg);
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+}

@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Information</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .bg {
+            min-height: 100vh;
+            width: 100%;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(/images/p9.jpg);
+            background-position: center;
+            background-size: cover;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        .navigationBar {
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            padding: 15px 50px;
+        }
+
+        .navigationBar a {
+            text-decoration: none;
+            color: rgb(150, 164, 210);
+            font-size: 26px;
+            font-weight: bold;
+        }
+
+        nav {
+            flex: 1;
+            text-align: right;
+        }
+
+        nav ul {
+            display: inline-block;
+            list-style: none;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin-left: 30px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 18px;
+            color: rgb(243, 242, 242);
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #F3C693;
+        }
+
+        .header-title {
+            text-align: center;
+            color: #F3C693;
+            font-size: 36px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .user-container {
+            display: flex;
+            justify-content: center;
+            padding: 10px 20px 40px 20px;
+        }
+
+        .user-card {
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .user-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #F3C693;
+            margin-bottom: 15px;
+        }
+
+        .user-name {
+            color: #F3C693;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .user-info-list {
+            text-align: left;
+            margin: 20px auto;
+            max-width: 380px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px 20px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .user-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f1f1f1;
+            font-size: 16px;
+        }
+
+        .user-info-row:last-child {
+            border-bottom: none;
+        }
+
+        .user-info-label {
+            color: #bbb;
+            font-weight: 500;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .button-container a,
+        .button-container form {
+            flex: 1;
+            text-decoration: none;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 12px 10px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: #F3C693;
+            color: #222;
+        }
+
+        .btn-secondary:hover {
+            background-color: #e5b37b;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class='bg'>
+        <div class="navigationBar">
+            <div>
+                <a href='/'>DHAKA AIRPORT</a>
+            </div>
+            <nav>
+                <ul id='MenuItems'>
+                    <li><a href='/'>Home</a></li>
+                    <li><a href='/service'>Services</a></li>
+                    <li><a href='/contact'>About Us</a></li>
+                    <li><a href='/contact'>Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <h1 class="header-title">User Information</h1>
+
+        <div class="user-container">
+            <div class="user-card">
+                <img src="/images/img.jpg" alt="User Profile" class="user-avatar">
+                <h2 class="user-name">
+                    <%= user.FIRST_NAME || '' %> <%= user.LAST_NAME || '' %>
+                </h2>
+
+                <div class="user-info-list">
+                    <div class="user-info-row">
+                        <span class="user-info-label">Passenger ID:</span>
+                        <span><%= user.ID || 'N/A' %></span>
+                    </div>
+                    <div class="user-info-row">
+                        <span class="user-info-label">Age:</span>
+                        <span><%= user.AGE || 'N/A' %></span>
+                    </div>
+                    <div class="user-info-row">
+                        <span class="user-info-label">Email:</span>
+                        <span><%= user.EMAIL || 'N/A' %></span>
+                    </div>
+                    <div class="user-info-row">
+                        <span class="user-info-label">Address:</span>
+                        <span><%= user.ADDRESS || 'N/A' %></span>
+                    </div>
+                </div>
+
+                <div class="button-container">
+                    <a href="/purchaseticket">
+                        <button class="action-btn btn-primary" id="purchaseButton">Purchase Ticket</button>
+                    </a>
+                    <form method="POST" action="/editprofile">
+                        <input type="hidden" name="id" value="<%= user.ID %>">
+                        <button type="submit" class="action-btn btn-secondary">Edit Profile</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
